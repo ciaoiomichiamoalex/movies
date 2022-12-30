@@ -1,0 +1,31 @@
+.background { background-color: #f7fafc; }
+
+.btn-color,
+.btn-color:hover {
+    background-color: #e9ecef;
+    border-color: #ced4da;
+}
+
+.color-success { background-color: #d1e7dd; }
+
+.color-danger { background-color: #f8d7da; }
+
+.color-warning { background-color: #fff3cd; }
+
+.toast-container { z-index: 2000; }
+
+img, figure {
+    -webkit-user-select: none;
+    -webkit-user-drag: none;
+    user-select: none;
+}
+
+input::-webkit-outer-spin-button,
+input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+}
+
+input[type=file]::-webkit-file-upload-button,
+input[type=file]::file-selector-button {
+    display: none;
+}

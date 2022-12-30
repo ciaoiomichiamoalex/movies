@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Movies DB</title>
+  <meta name="description" content="Personal DB of movies">
+  <link rel="icon" href="/resources/icons/favicon.svg">
+  <link rel="stylesheet" href="/include/frameworks/bootstrap.min.css">
+  <link rel="stylesheet" href="/include/modules/cln/main.css">
+</head>
+<body class="background">
+<!-- finestra modale con login utente -->
+<div id="modal-login" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title user-select-none">LOGIN</h3>
+      </div>
+
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12">
+              <div class="input-group shadow-sm">
+                <div class="input-group-text">
+                  <img src="/resources/icons/username.svg" alt="Username">
+                </div>
+
+                <input id="username" type="text" class="form-control" placeholder="Username">
+              </div>
+            </div>
+
+            <div class="col-12">
+              <div class="input-group mt-3 shadow-sm">
+                <div class="input-group-text">
+                  <img src="/resources/icons/password.svg" alt="Password">
+                </div>
+
+                <input id="password" type="password" class="form-control" placeholder="Password">
+              </div>
+            </div>
+
+            <!-- visibile se si sbaglia l'accesso -->
+            <div id="login-error" class="col-12 mt-3 visually-hidden">
+              <div class="alert alert-danger mb-0 d-flex align-items-center" role="alert">
+                <img src="/resources/icons/danger.svg" alt="Login error">
+
+                <div class="ms-2">
+                  <strong>ERROR:</strong> wrong username or password!
+                </div>
+              </div>
+            </div>
+
+            <!-- visibile se si accede senza inserire le credenziali -->
+            <div id="login-warning" class="col-12 mt-3 visually-hidden">
+              <div class="alert alert-warning mb-0 d-flex align-items-center" role="alert">
+                <img src="/resources/icons/warning.svg" alt="Login warning">
+
+                <div class="ms-2">
+                  <strong>WARNING:</strong> enter username and password!
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="modal-footer">
+        <button id="login" type="button" class="btn btn-primary opacity-75 shadow-sm">ENTER</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- finestra modale con upload file -->
+<div id="modal-load" class="modal fade" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1">
+  <div class="modal-dialog modal-dialog-centered">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h3 class="modal-title user-select-none">LOAD MOVIES</h3>
+        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+      </div>
+
+      <div class="modal-body">
+        <div class="container-fluid">
+          <div class="row">
+            <div class="col-12 user-select-none">
+              <p class="mb-1"><strong>FILE RULES:</strong></p>
+              <ul>
+                <li><kbd>CSV</kbd> required;</li>
+                <li>Movies on each line (<samp>"name",review</samp>).</li>
+              </ul>
+            </div>
+
+            <div class="col-12">
+              <div class="input-group shadow-sm">
+                <label class="input-group-text" for="file">
+                  <img src="/resources/icons/file.svg" alt="File">
+                </label>
+                <input id="file" type="file" name="file" class="form-control user-select-none">
+
+                <button id="charge" type="button" class="btn btn-primary opacity-75">
+                  <img src="/resources/icons/charge.svg" alt="Load file">
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- interfaccia del sito -->
+<div class="container-fluid">
+  <div class="row min-vh-100">
+    <!-- colonna SX -->
+    <div class="background col-12 col-md-6 align-self-start sticky-top">
+      <div class="row">
+        <div class="col-6 mb-2 mt-2 mt-md-3">
+          <img src="/resources/icons/image.svg" alt="Movies DB image">
+        </div>
+
+        <div class="col-6 mb-2 mt-2 mt-md-3 d-flex flex-wrap align-self-center">
+          <img src="/resources/icons/label.svg" alt="Movies DB label">
+        </div>
+
+        <div class="col-12 col-md-8 mb-2">
+          <input id="name" type="text" class="form-control shadow-sm" placeholder="Name">
+        </div>
+
+        <div class="col-12 col-md-4 mb-2">
+          <input id="review" type="number" class="form-control shadow-sm" placeholder="Review">
+        </div>
+
+        <div class="col-12 mb-2 text-center">
+          <button id="create" type="button" class="btn btn-primary opacity-75 shadow-sm ps-5 pe-5">INSERT</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- colonna DX -->
+    <div class="col-12 col-md-6 mb-5 mb-md-0">
+      <div id="box" class="row">
+        <!-- elemento d'esempio -->
+        <div class="col-12 element">
+          <div class="card m-3 p-3 shadow-sm">
+            <div class="row g-0">
+              <div class="col-10 ps-3 pe-2 text-truncate user-select-none element-name">Movie</div>
+              <div class="col-2 text-center user-select-none element-review">7</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- visibile solo se seleziono un elemento -->
+    <div id="modify" class="background col-12 col-md-6 position-fixed bottom-0 start-0 visually-hidden">
+      <div class="row text-center">
+        <div class="col-6 mb-2 mt-2">
+          <button id="change" type="button" class="btn btn-success opacity-75 shadow-sm ps-5 pe-5">UPDATE</button>
+        </div>
+
+        <div class="col-6 mb-2 mt-2">
+          <button id="remove" type="button" class="btn btn-danger opacity-75 shadow-sm ps-5 pe-5">DELETE</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ordinamento visibile solo quando non si ha selezionato un elemento -->
+    <div id="order" class="background col-12 col-md-6 position-fixed bottom-0 start-0">
+      <div class="row text-center">
+        <div class="col-2 mb-2 mb-md-3 mt-2">
+          <button type="button" class="btn btn-color shadow-sm" data-bs-toggle="offcanvas" data-bs-target="#offcanvas">
+            <img src="/resources/icons/advanced.svg" alt="Advanced">
+          </button>
+        </div>
+
+        <div id="order-selection" class="col-8 mb-2 mb-md-3 mt-2">
+          <div class="input-group shadow-sm">
+            <div class="input-group-text">
+              <img src="/resources/icons/order.svg" alt="Movies order">
+            </div>
+
+            <select id="order-value" class="form-select text-truncate user-select-none">
+              <option value="0" selected>Time</option>
+              <option value="1">Name</option>
+              <option value="2">Review</option>
+            </select>
+
+            <select id="order-type" class="form-select text-truncate user-select-none">
+              <option value="0" selected>Descending</option>
+              <option value="1">Ascending</option>
+            </select>
+          </div>
+        </div>
+
+        <div id="search-selection" class="col-8 mb-2 mb-md-3 mt-2 visually-hidden">
+          <input id="search-value" type="text" class="form-control shadow-sm" placeholder="Movie search...">
+        </div>
+
+        <div class="col-2 mb-2 mb-md-3 mt-2">
+          <button id="search" type="button" class="btn btn-color shadow-sm">
+            <img src="/resources/icons/search.svg" alt="Movie search">
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- offcanvas con impostazioni avanzate -->
+<div id="offcanvas" class="offcanvas offcanvas-start" data-bs-backdrop="static" tabindex="-1">
+  <div class="offcanvas-header">
+    <h3 class="offcanvas-title user-select-none">ADVANCED</h3>
+    <button type="button" class="btn-close" data-bs-dismiss="offcanvas"></button>
+  </div>
+
+  <div class="offcanvas-body user-select-none">
+    <ul class="list-group list-group-flush">
+      <button id="download" type="button" class="list-group-item list-group-item-action">
+        <img src="/resources/icons/download.svg" class="me-2" alt="Movies download">
+        Download movies in CSV
+      </button>
+
+      <button id="load" type="button" class="list-group-item list-group-item-action">
+        <img src="/resources/icons/load.svg" class="me-2" alt="Movies load">
+        Load movies from CSV
+      </button>
+
+      <button id="source" type="button" class="list-group-item list-group-item-action">
+        <img src="/resources/icons/source.svg" class="me-2" alt="Movies source">
+        View source code
+      </button>
+
+      <button type="button" class="list-group-item list-group-item-action" disabled></button>
+    </ul>
+
+    <div class="vstack gap-3 position-fixed bottom-0">
+      <button id="logout" type="button" class="btn btn-danger opacity-75 shadow-sm ps-5 pe-5">LOGOUT</button>
+
+      <!-- owner info -->
+      <figure class="mb-0">
+        <blockquote class="blockquote user-select-none">Movies DB</blockquote>
+        <figcaption class="blockquote-footer user-select-none">Alex Occelli ©2022 - version 1.0.0</figcaption>
+      </figure>
+    </div>
+  </div>
+</div>
+
+<!-- message for information -->
+<div class="toast-container position-fixed bottom-0 end-0 p-2 p-md-3">
+  <div id="notification" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
+    <div class="d-flex">
+      <img id="message-icon" class="ps-3" alt="Message">
+      <div id="message" class="toast-body"></div>
+      <button type="button" class="btn-close me-2 m-auto" data-bs-dismiss="toast"></button>
+    </div>
+  </div>
+</div>
+
+<script src="/include/frameworks/bootstrap.min.js"></script>
+<script src="/include/frameworks/jquery.min.js"></script>
+<script src="/include/modules/cln/main.js"></script>
+</body>
+</html>
